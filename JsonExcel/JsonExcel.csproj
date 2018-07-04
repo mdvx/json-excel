@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="AddIn.cs" />
     <Compile Include="Functions.cs" />
+    <Compile Include="Matrix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

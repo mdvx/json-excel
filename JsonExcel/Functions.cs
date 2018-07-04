@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExcelDna.Integration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonExcel
 {
     public static class Functions
     {
-        private static Dictionary<string, Dictionary<object, object>> _deserializeCache = new Dictionary<string, Dictionary<object, object>>();
+        private static Dictionary<string, JObject> _deserializeCache = new Dictionary<string, JObject>();
 
         [ExcelFunction(Category = "JSON", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
         public static object JsonFromCells(object[,] range)
@@ -41,29 +43,28 @@ namespace JsonExcel
         {
             try
             {
-                if (!_deserializeCache.TryGetValue(json,out Dictionary<object, object> dic))
+                if (!_deserializeCache.TryGetValue(json, out JObject jsonLinq))
                 {
-                    dic = JsonConvert.DeserializeObject<Dictionary<object, object>>(json);
-                    _deserializeCache[json] = dic;
+                    jsonLinq = JObject.Parse(json);
+                    _deserializeCache[json] = jsonLinq;
                 }
 
-                var arr = orientation == 0 ? new object[dic.Keys.Count, 2] :  new object[2,dic.Keys.Count];
-                int i = 0;
-                foreach(var e in dic)
+                IEnumerable<JToken> jTokens = jsonLinq.Descendants().Where(p => p.Count() == 0);
+                Dictionary<string, object> results = jTokens.Aggregate(new Dictionary<string, object>(), (properties, jToken) =>
                 {
-                    if (orientation == 0)
-                    {
-                        arr[i, 0] = e.Key;
-                        arr[i, 1] = e.Value;
-                    }
-                    else
-                    {
-                        arr[0, i] = e.Key;
-                        arr[1, i] = e.Value;
-                    }
+                    properties.Add(jToken.Path, jToken);
+                    return properties;
+                });
+
+                object[,] array = new object[results.Count, 2];
+                int i = 0;
+                foreach (var e in results) {
+                    array[i, 0] = e.Key;
+                    array[i, 1] = e.Value.ToString();
                     i++;
                 }
-                return arr;
+
+                return orientation == 0 ? array : array.Transpose();
             }
             catch (Exception ex)
             {
@@ -75,13 +76,13 @@ namespace JsonExcel
         {
             try
             {
-                if (!_deserializeCache.TryGetValue(json, out Dictionary<object, object> dic))
+                if (!_deserializeCache.TryGetValue(json, out JObject jo))
                 {
-                    dic = JsonConvert.DeserializeObject<Dictionary<object, object>>(json);
-                    _deserializeCache[json] = dic;
+                    jo = JObject.Parse(json);
+                    _deserializeCache[json] = jo;
                 }
 
-                return dic[key];
+                return jo[key].ToString();
             }
             catch (KeyNotFoundException)
             {
