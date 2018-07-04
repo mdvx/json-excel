@@ -3,15 +3,28 @@ Convert JSON string to cell values and Cell Ranges to JSON string
 
 INCOMPLETE but usuable
 
-# From JSON to cells
+Simply paste a JSON formatted string into a cell and use the worksheet functions to extract the properties.
 
-=JsonToArray("{ 'title': 'a json string', 'summary': 23}", oritentation=0|1) => 2x2 array (CTRL-SHIFT-ENTER for formula arrays)
+Maximum JSON string length is 32767.
 
-=JsonLookup("{ 'title': 'a json string'}","title")  => "a json string"
+## From JSON to cells
 
+* =JsonToArray("{ 'title': 'my title', 'summary': "sum"}")
+	=> 2x2 array (CTRL-SHIFT-ENTER for formula arrays)
 
-# From Cells to JSON
+* =JsonLookup("{ 'title': 'my title', 'summary': 'sum'}","title")  
+	=> "title"
 
-=JsonFromCells(A1:C3) => { 'a1 value': 'b1 value'}
+* =JsonLookup("{ 'title': 'my title', 'count': 23}","count")  
+	=> 23
 
+## From Cells to JSON
+* =JsonFromCells(A1:C3) 
+	=> { 'a1 value': 'b1 value'}
 
+### JsonToArray
+* json string
+
+* orientation
+	0 => vertical
+	1 => horizontal
