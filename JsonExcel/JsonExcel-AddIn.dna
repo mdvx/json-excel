@@ -1,4 +1,4 @@
-<DnaLibrary Name="JsonExcel Add-In" RuntimeVersion="v4.0">
+<DnaLibrary Name="JsonExcel Add-In" RuntimeVersion="v4.0" Language="CS">
   <ExternalLibrary Path="JsonExcel.dll" ExplicitExports="false" ComServer="true" LoadFromBytes="true" Pack="true" />
   
   <!-- 

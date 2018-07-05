@@ -9,19 +9,19 @@ using ExcelDna.Integration;
 
 namespace JsonExcel
 {
-    //[ComVisible(true)]
-    //[ClassInterface(ClassInterfaceType.AutoDual)]
-    //public class ComLibrary
-    //{
-    //    public string ComLibraryHello()
-    //    {
-    //        return "Hello from JsonExcel.ComLibrary";
-    //    }
-    //    public double Add(double x, double y)
-    //    {
-    //        return x + y;
-    //    }
-    //}
+    [ComVisible(true)]
+    [ClassInterface(ClassInterfaceType.AutoDual)]
+    public class ComLibrary
+    {
+        public string ComLibraryHello()
+        {
+            return "Hello from JsonExcel.ComLibrary";
+        }
+        public double Add(double x, double y)
+        {
+            return x + y;
+        }
+    }
     [ComVisible(false)]
     public class ExcelAddin : IExcelAddIn
     {
@@ -31,7 +31,7 @@ namespace JsonExcel
         }
         public void AutoClose()
         {
-            //ComServer.DllUnregisterServer();
+            ComServer.DllUnregisterServer();
         }
     }
 

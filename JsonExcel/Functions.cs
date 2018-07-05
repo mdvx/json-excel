@@ -13,6 +13,7 @@ namespace JsonExcel
     public static class Functions
     {
         private static Dictionary<string, JObject> _deserializeCache = new Dictionary<string, JObject>();
+        private static Dictionary<JObject, Dictionary<string,object>> _flatternCache = new Dictionary<JObject, Dictionary<string, object>>();
 
         [ExcelFunction(Category = "JSON", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
         public static object JsonFromCells(object[,] range)
@@ -43,18 +44,22 @@ namespace JsonExcel
         {
             try
             {
-                if (!_deserializeCache.TryGetValue(json, out JObject jsonLinq))
+                if (!_deserializeCache.TryGetValue(json, out JObject jo))
                 {
-                    jsonLinq = JObject.Parse(json);
-                    _deserializeCache[json] = jsonLinq;
+                    jo = JObject.Parse(json);
+                    _deserializeCache[json] = jo;
                 }
 
-                IEnumerable<JToken> jTokens = jsonLinq.Descendants().Where(p => p.Count() == 0);
-                Dictionary<string, object> results = jTokens.Aggregate(new Dictionary<string, object>(), (properties, jToken) =>
+                if (!_flatternCache.TryGetValue(jo, out Dictionary<string, object> results))
                 {
-                    properties.Add(jToken.Path, jToken);
-                    return properties;
-                });
+                    IEnumerable<JToken> jTokens = jo.Descendants().Where(p => p.Count() == 0);
+                    results = jTokens.Aggregate(new Dictionary<string, object>(), (properties, jToken) =>
+                    {
+                        properties.Add(jToken.Path, jToken);
+                        return properties;
+                    });
+                    _flatternCache[jo] = results;
+                }
 
                 object[,] array = new object[results.Count, 2];
                 int i = 0;
@@ -81,8 +86,18 @@ namespace JsonExcel
                     jo = JObject.Parse(json);
                     _deserializeCache[json] = jo;
                 }
+                if (!_flatternCache.TryGetValue(jo, out Dictionary<string, object> results))
+                {
+                    IEnumerable<JToken> jTokens = jo.Descendants().Where(p => p.Count() == 0);
+                    results = jTokens.Aggregate(new Dictionary<string, object>(), (properties, jToken) =>
+                    {
+                        properties.Add(jToken.Path, jToken);
+                        return properties;
+                    });
+                    _flatternCache[jo] = results;
+                }
 
-                return jo[key].ToString();
+                return results[key].ToString();
             }
             catch (KeyNotFoundException)
             {
