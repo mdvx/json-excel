@@ -15,7 +15,7 @@ namespace JsonExcel
         private static Dictionary<string, JObject> _deserializeCache = new Dictionary<string, JObject>();
         private static Dictionary<JObject, Dictionary<string,object>> _flatternCache = new Dictionary<JObject, Dictionary<string, object>>();
 
-        [ExcelFunction(Category = "JSON", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
+        [ExcelFunction(Category = "JsonExcel", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
         public static object JsonFromCells(object[,] range)
         {
             try
@@ -39,7 +39,7 @@ namespace JsonExcel
                 return ex.Message;  // ExcelError.ExcelErrorNA;
             }
         }
-        [ExcelFunction( Category ="JSON",Description ="Convert a JSON string to and Excel Array", IsExceptionSafe = true)]
+        [ExcelFunction( Category = "JsonExcel", Description ="Convert a JSON string to an Excel Array", IsExceptionSafe = true)]
         public static object JsonToArray(string json, int orientation=0)
         {
             try
@@ -76,7 +76,7 @@ namespace JsonExcel
                 return ex.Message;
             }
         }
-        [ExcelFunction(Category = "JSON", Description = "lookup a JSON key in a string", IsExceptionSafe=true)]
+        [ExcelFunction(Category = "JsonExcel", Description = "Lookup a JSON key in a string", IsExceptionSafe=true)]
         public static object JsonLookup(string json, string key)
         {
             try
