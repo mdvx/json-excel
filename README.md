@@ -7,6 +7,12 @@ Simply paste a JSON formatted string into a cell and use the worksheet functions
 
 Maximum JSON string length is 32767.
 
+## Install
+
+After compiling, add the AddIn (from the Options menu or via the Alt+t, i shortcut) 
+Browse to JsonExcel-AddIn-packed.xll (in bin/Debug or bin/Release)
+
+
 ## From JSON to cells
 
 * =JsonToArray("{ 'title': 'my title', 'summary': "sum"}")
