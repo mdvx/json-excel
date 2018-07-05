@@ -31,7 +31,7 @@ namespace JsonExcel
         }
         public void AutoClose()
         {
-            ComServer.DllUnregisterServer();
+            //ComServer.DllUnregisterServer();
         }
     }
 
