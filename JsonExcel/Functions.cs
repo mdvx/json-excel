@@ -16,7 +16,8 @@ namespace JsonExcel
         private static Dictionary<JObject, Dictionary<string,object>> _flatternCache = new Dictionary<JObject, Dictionary<string, object>>();
 
         [ExcelFunction(Category = "JsonExcel", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
-        public static object JsonFromCells(object[,] range)
+        public static object JsonFromCells(
+            [ExcelArgument(Description = "Input Excel Range")] object[,] range)
         {
             try
             {
@@ -40,7 +41,9 @@ namespace JsonExcel
             }
         }
         [ExcelFunction( Category = "JsonExcel", Description ="Convert a JSON string to an Excel Array", IsExceptionSafe = true)]
-        public static object JsonToArray(string json, int orientation=0)
+        public static object JsonToArray(
+            [ExcelArgument(Description = "JSON String")] string json,
+            [ExcelArgument(Description = "0 - Vertical, 1 - Horizontal")] int orientation=0)
         {
             try
             {
@@ -77,7 +80,9 @@ namespace JsonExcel
             }
         }
         [ExcelFunction(Category = "JsonExcel", Description = "Lookup a JSON key in a string", IsExceptionSafe=true)]
-        public static object JsonLookup(string json, string key)
+        public static object JsonLookup(
+            [ExcelArgument(Description = "JSON String")] string json,
+            [ExcelArgument(Description = "JSON Key")] string key)
         {
             try
             {
