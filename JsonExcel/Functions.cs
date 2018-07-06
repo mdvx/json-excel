@@ -17,7 +17,7 @@ namespace JsonExcel
 
         [ExcelFunction(Category = "JsonExcel", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
         public static object JsonFromCells(
-            [ExcelArgument(Description = "Input Excel Range")] object[,] range)
+            [ExcelArgument(Description = "Excel input range")] object[,] range)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace JsonExcel
         }
         [ExcelFunction( Category = "JsonExcel", Description ="Convert a JSON string to an Excel Array", IsExceptionSafe = true)]
         public static object JsonToArray(
-            [ExcelArgument(Description = "JSON String")] string json,
+            [ExcelArgument(Description = "JSON input string")] string json,
             [ExcelArgument(Description = "0 - Vertical, 1 - Horizontal")] int orientation=0)
         {
             try
@@ -81,8 +81,8 @@ namespace JsonExcel
         }
         [ExcelFunction(Category = "JsonExcel", Description = "Lookup a JSON key in a string", IsExceptionSafe=true)]
         public static object JsonLookup(
-            [ExcelArgument(Description = "JSON String")] string json,
-            [ExcelArgument(Description = "JSON Key")] string key)
+            [ExcelArgument(Description = "JSON input string")] string json,
+            [ExcelArgument(Description = "JSON lookup Key")] string key)
         {
             try
             {
