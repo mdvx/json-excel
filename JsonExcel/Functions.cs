@@ -15,7 +15,9 @@ namespace JsonExcel
         private static Dictionary<string, JObject> _deserializeCache = new Dictionary<string, JObject>();
         private static Dictionary<JObject, Dictionary<string,object>> _flatternCache = new Dictionary<JObject, Dictionary<string, object>>();
 
-        [ExcelFunction(Category = "JsonExcel", Description = "Convert an Excel Range to a JSON string", IsExceptionSafe = true)]
+        [ExcelFunction("Convert an Excel Range to a JSON string", 
+            Category = "Json Excel",
+            IsExceptionSafe = true)]
         public static object JsonFromCells(
             [ExcelArgument(Description = "Excel input range")] object[,] range)
         {
@@ -40,10 +42,12 @@ namespace JsonExcel
                 return ex.Message;  // ExcelError.ExcelErrorNA;
             }
         }
-        [ExcelFunction( Category = "JsonExcel", Description ="Convert a JSON string to an Excel Array", IsExceptionSafe = true)]
+        [ExcelFunction( "Convert a JSON string to an Excel Array", 
+            Category = "Json Excel", 
+            IsExceptionSafe = true)]
         public static object JsonToArray(
             [ExcelArgument(Description = "JSON input string")] string json,
-            [ExcelArgument(Description = "0 - Vertical, 1 - Horizontal")] int orientation=0)
+            [ExcelArgument(Description = "0 - Vertical (default)\n1 - Horizontal")] int orientation=0)
         {
             try
             {
@@ -79,10 +83,12 @@ namespace JsonExcel
                 return ex.Message;
             }
         }
-        [ExcelFunction(Category = "JsonExcel", Description = "Lookup a JSON key in a string", IsExceptionSafe=true)]
+        [ExcelFunction( "Lookup a JSON key in a string", 
+            Category = "Json Excel", 
+            IsExceptionSafe = true)]
         public static object JsonLookup(
             [ExcelArgument(Description = "JSON input string")] string json,
-            [ExcelArgument(Description = "JSON lookup Key")] string key)
+            [ExcelArgument(Description = "JSON lookup key")] string key)
         {
             try
             {
