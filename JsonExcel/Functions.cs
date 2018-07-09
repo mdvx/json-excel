@@ -72,7 +72,7 @@ namespace JsonExcel
                 int i = 0;
                 foreach (var e in results) {
                     array[i, 0] = e.Key;
-                    array[i, 1] = e.Value.ToString();
+                    array[i, 1] = ToExcelVal(e.Value);
                     i++;
                 }
 
