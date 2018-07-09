@@ -97,6 +97,9 @@ namespace JsonExcel
                     jo = JObject.Parse(json);
                     _deserializeCache[json] = jo;
                 }
+                if (jo.ContainsKey(key))
+                    return ToExcelVal(jo[key]);
+
                 if (!_flatternCache.TryGetValue(jo, out Dictionary<string, object> results))
                 {
                     IEnumerable<JToken> jTokens = jo.Descendants().Where(p => p.Count() == 0);
@@ -108,7 +111,7 @@ namespace JsonExcel
                     _flatternCache[jo] = results;
                 }
 
-                return results[key].ToString();
+                return ToExcelVal(results[key]);
             }
             catch (KeyNotFoundException)
             {
@@ -119,5 +122,17 @@ namespace JsonExcel
                 return ex.Message;
             }
         }
+
+        private static object ToExcelVal(object val)
+        {
+            if (val is JValue)
+                return (val as JValue).Value;
+
+            if (val is JToken)
+                return (val as JToken).ToObject<object>();
+
+            return val.ToString();
+        }
+
     }
 }
