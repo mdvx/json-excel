@@ -129,7 +129,11 @@ namespace JsonExcel
                 return (val as JValue).Value;
 
             if (val is JToken)
-                return (val as JToken).ToObject<object>();
+            {
+                var jt = val as JToken;
+                if (!jt.HasValues)  // no children
+                    return jt.ToObject<object>();
+            }
 
             return val.ToString();
         }
