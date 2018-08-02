@@ -12,8 +12,8 @@ namespace JsonExcel
 {
     public static class Functions
     {
-        private static Dictionary<string, JObject> _deserializeCache = new Dictionary<string, JObject>();
-        private static Dictionary<JObject, Dictionary<string,object>> _flatternCache = new Dictionary<JObject, Dictionary<string, object>>();
+        private static Dictionary<string, JContainer> _deserializeCache = new Dictionary<string, JContainer>();
+        private static Dictionary<JContainer, Dictionary<string,object>> _flatternCache = new Dictionary<JContainer, Dictionary<string, object>>();
 
         [ExcelFunction("Convert an Excel Range to a JSON string", 
             Category = "Json Excel",
@@ -26,7 +26,6 @@ namespace JsonExcel
                 Dictionary<object, object> dic = new Dictionary<object, object>();
                 for (int i = range.GetLowerBound(0); i < range.GetUpperBound(0); i++)
                 {
-
                     dic[range[i, 0]] = range[i, 1];
 
                     for (int j = 1; j < range.GetUpperBound(1); j++)
@@ -51,21 +50,27 @@ namespace JsonExcel
         {
             try
             {
-                if (!_deserializeCache.TryGetValue(json, out JObject jo))
+                if (!_deserializeCache.TryGetValue(json, out JContainer jc))
                 {
-                    jo = JObject.Parse(json);
-                    _deserializeCache[json] = jo;
+                    if (json.StartsWith("{"))
+                        jc = JObject.Parse(json);
+                    else if (json.StartsWith("["))
+                        jc = JArray.Parse(json);
+                    else
+                        throw new ArgumentException("Not JSON");
+
+                    _deserializeCache[json] = jc;
                 }
 
-                if (!_flatternCache.TryGetValue(jo, out Dictionary<string, object> results))
+                if (!_flatternCache.TryGetValue(jc, out Dictionary<string, object> results))
                 {
-                    IEnumerable<JToken> jTokens = jo.Descendants().Where(p => p.Count() == 0);
+                    IEnumerable<JToken> jTokens = jc.Descendants().Where(p => p.Count() == 0);
                     results = jTokens.Aggregate(new Dictionary<string, object>(), (properties, jToken) =>
                     {
                         properties.Add(jToken.Path, jToken);
                         return properties;
                     });
-                    _flatternCache[jo] = results;
+                    _flatternCache[jc] = results;
                 }
 
                 object[,] array = new object[results.Count, 2];
@@ -92,23 +97,33 @@ namespace JsonExcel
         {
             try
             {
-                if (!_deserializeCache.TryGetValue(json, out JObject jo))
+                if (!_deserializeCache.TryGetValue(json, out JContainer jc))
                 {
-                    jo = JObject.Parse(json);
-                    _deserializeCache[json] = jo;
-                }
-                if (jo.ContainsKey(key))
-                    return ToExcelVal(jo[key]);
+                    if (json.StartsWith("["))
+                        jc = JArray.Parse(json);
+                    else if (json.StartsWith("{"))
+                        jc = JObject.Parse(json);
+                    else
+                        throw new ArgumentException("Not JSON");
 
-                if (!_flatternCache.TryGetValue(jo, out Dictionary<string, object> results))
+                    _deserializeCache[json] = jc;
+                }
+
+                if (jc is JObject && (jc as JObject).ContainsKey(key))
+                    return ToExcelVal(jc[key]);
+
+                if (jc is JArray && Convert.ToInt32(key) < (jc as JArray).Count)
+                    return ToExcelVal(jc[Convert.ToInt32(key)]);
+
+                if (!_flatternCache.TryGetValue(jc, out Dictionary<string, object> results))
                 {
-                    IEnumerable<JToken> jTokens = jo.Descendants().Where(p => p.Count() == 0);
+                    IEnumerable<JToken> jTokens = jc.Descendants().Where(p => p.Count() == 0);
                     results = jTokens.Aggregate(new Dictionary<string, object>(), (properties, jToken) =>
                     {
                         properties.Add(jToken.Path, jToken);
                         return properties;
                     });
-                    _flatternCache[jo] = results;
+                    _flatternCache[jc] = results;
                 }
 
                 return ToExcelVal(results[key]);
