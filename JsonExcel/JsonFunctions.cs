@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JsonExcel
 {
-    public static class Functions
+    public static class JsonFunctions
     {
         private static Dictionary<string, JContainer> _deserializeCache = new Dictionary<string, JContainer>();
         private static Dictionary<JContainer, Dictionary<string,object>> _flatternCache = new Dictionary<JContainer, Dictionary<string, object>>();
@@ -24,11 +24,11 @@ namespace JsonExcel
             try
             {
                 Dictionary<object, object> dic = new Dictionary<object, object>();
-                for (int i = range.GetLowerBound(0); i < range.GetUpperBound(0); i++)
+                for (int i = range.GetLowerBound(0); i <= range.GetUpperBound(0); i++)
                 {
                     dic[range[i, 0]] = range[i, 1];
 
-                    for (int j = 1; j < range.GetUpperBound(1); j++)
+                    for (int j = range.GetLowerBound(1); j <= range.GetUpperBound(1); j++)
                     {
                         dic[range[i, 0]] = range[i, j];
                     }
