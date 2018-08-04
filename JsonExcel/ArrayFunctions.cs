@@ -12,24 +12,37 @@ namespace JsonExcel
     {
         [ExcelFunction("Sort Array", Category = "Array",Name ="Sort2", IsExceptionSafe = true)]
         public static object Sort(
-            [ExcelArgument(Description = "Excel input range", Name ="Input")] object[,] range,
-            [ExcelArgument(Description = "Sort column", Name = "Sort Index")] int sortIndex = 0)
+            [ExcelArgument(Description = "Excel input range", Name ="Input")] object[,] r,
+            [ExcelArgument(Description = "Sort Order\n0 - Ascending (default)\n1 - descending", Name = "Order")] int sortOrder = 0,
+            [ExcelArgument(Description = "Sort Index\n0 - First Column (default)\n1-n another column", Name = "Index")] int sortIndex = 0
+        )
         {
             try
             {
-                SortedList list = new SortedList();
+                var list = new List<Tuple<IComparable, int>>();  // Sort should not DeDup, use a different method
 
-                for (int i = range.GetLowerBound(0); i <= range.GetUpperBound(0); i++)
+                for (int i = r.GetLowerBound(sortIndex); i <= r.GetUpperBound(sortIndex); i++)
                 {
-                    if (!list.Contains(range[i, sortIndex]))
-                        list.Add(range[i, sortIndex], range[i, 0]);
+                    list.Add(Tuple.Create(r[i,sortIndex] as IComparable, i));
                 }
 
-                object[,] array = new object[list.Count, 1];
-                int j = 0;
-                foreach (var e in list.Values)
+                int internalSortOrder = sortOrder == 0 ? 1 : -1;
+
+                list.Sort((x, y) => {
+                    IComparable x1 = x.Item1;
+                    IComparable y1 = y.Item1;
+
+                    if (x1 == null) return internalSortOrder;
+                    if (y1 == null) return -internalSortOrder;
+
+                    return x1.CompareTo(y1) * internalSortOrder;
+                });
+
+                object[,] array = new object[r.GetUpperBound(0) - r.GetLowerBound(0)+1, r.GetUpperBound(1) - r.GetLowerBound(1) + 1];
+                int j = r.GetLowerBound(0);
+                for (int i = r.GetLowerBound(sortIndex); i <= r.GetUpperBound(sortIndex); i++)
                 {
-                    array[j, 0] = e;
+                    array[j, 0] = list[i].Item1;
                     j++;
                 }
                 return array;
